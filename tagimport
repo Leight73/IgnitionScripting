@@ -1,0 +1,61 @@
+##Author: Cole Leighton
+##Date: 04/04/2024
+##Instructions: 
+## 1. Define each UDT type below "for row in reader:" these types need to match your UDT types
+## 2. Open the scripting console and run the defined function below: 
+##		print tagimport.openFile()
+
+import csv #import the python csv library
+
+#Open csv file through file selector
+def openFile():
+	csvExport = 'Provider,ContainingFolder,Name,Description,UDTType'
+
+	filePath = system.file.saveFile("TagImportTemplate.csv", 'csv', "Comma Seperate Values")
+
+	if filePath:
+    		system.file.writeFile(filePath, csvExport)
+	filePath = system.file.openFile("csv", "%user%")
+	csvFile = open(filePath, 'r')
+	reader = csv. DictReader (csvFile)
+	print reader.fieldnames
+	
+	for row in reader:
+		#Call addUDT function based on UDTType
+		if row['UDTType'] == 'ALARM_DIGITAL': addAIn(row)
+		if row['UDTType'] == 'EM': addAIn(row)
+		if row['UDTType'] == 'PHI_2S_Actuator': addAIn(row)
+		if row['UDTType'] == 'PHI_DIGINPUT': addAIn(row)
+		if row['UDTType'] == 'PHI_MD': addAIn(row)
+		if row['UDTType'] == 'PHI_MOTOR': addAIn(row)
+		if row['UDTType'] == 'PHI_Setpoint': addAIn(row)
+		if row['UDTType'] == 'PHI_SYS_CNFG': addAIn(row)
+		if row['UDTType'] == 'REROUTE': addAIn(row)
+		if row['UDTType'] == 'SYS_CLASS': addAIn(row)
+		if row['UDTType'] == 'TIMER': addAIn(row)
+		if row['UDTType'] == 'uEM_CTRL': addAIn(row)
+		if row['UDTType'] == 'uEM_STS': addAIn(row)
+		if row['UDTType'] == 'zBin_Data32': addAIn(row)
+		if row['UDTType'] == 'zBin_Data32': addAIn(row)
+		
+		
+#Function to add instance tag of UDT type
+def addAIn( csvRow ):
+	if csvRow['Provider'] == "": tagProv = '[default]'
+	else: tagProv = '[' + csvRow['Provider'] + ']'
+	ContainingFolder = tagProv + csvRow['ContainingFolder']
+	tagName = ContainingFolder + '/' + csvRow['Name']
+
+	if system.tag.exists(tagName):
+		system.tag.removeTag (tagName)
+		print tagName + ' removed'
+		
+	system. tag.addTag( parentPath = ContainingFolder,
+						name = csvRow['Name'],
+						tagType = 'UDT_INST',
+						attributes={ 'UDTParentType': csvRow['UDTType']},
+						parameters={'opc_endpoint': 'ns=1;s=' + tagProv + csvRow['Name'],
+									},
+						overrides={"Meta/Description":{"value":csvRow['Description']}
+									},
+						)
