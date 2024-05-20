@@ -1,0 +1,4 @@
+from javax.swing import ToolTipManager
+#ToolTipManager.sharedInstance().initialDelay = 0
+#ToolTipManager.sharedInstance().initialDelay = 1000
+#ToolTipManager.sharedInstance().enabled = False
