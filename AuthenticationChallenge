@@ -18,29 +18,53 @@ def onAuthChallengeCompleted(session, payload, result):
 		user2 = context.user.userName
 		roles = user.roles
 		
-	if 'Administrator' or 'Maintenance' or 'Supervisor' in roles:
-		userString = user1 + ' & ' + user2
-		system.tag.writeBlocking([tagPath], [1])
-		system.util.audit(
-			action = 'Hand Mode Request',
-			actionTarget = tagPath,
-			auditProfile = 'WAH_CND_AUDIT',
-			actionValue = 'Reason: ' +  comment,
-			actor = userString,
-			originatingContext = 4,
-			actorHost = host
-			)
-		
-	else:
-		system.util.audit(
-			action = 'Hand Mode Request Failed',
-			actionTarget = tagPath,
-			auditProfile = 'WAH_CND_AUDIT',
-			actionValue = 'Reason: ' +  comment,
-			actor = userString,
-			originatingContext = 4,
-			actorHost = host
-			)
+		if 'Administrator' in roles:
+			userString = user1 + ' & ' + user2
+			system.tag.writeBlocking([tagPath], [1])
+			system.util.audit(
+				action = 'Hand Mode Request - Administrator',
+				actionTarget = tagPath,
+				auditProfile = 'WAH_CND_AUDIT',
+				actionValue = 'Reason: ' +  comment,
+				actor = userString,
+				originatingContext = 4,
+				actorHost = host
+				)
+		elif 'Maintenance' in roles:
+			userString = user1 + ' & ' + user2
+			system.tag.writeBlocking([tagPath], [1])
+			system.util.audit(
+				action = 'Hand Mode Request - Maintenance',
+				actionTarget = tagPath,
+				auditProfile = 'WAH_CND_AUDIT',
+				actionValue = 'Reason: ' +  comment,
+				actor = userString,
+				originatingContext = 4,
+				actorHost = host
+				)
+		elif 'Supervisor' in roles:
+			userString = user1 + ' & ' + user2
+			system.tag.writeBlocking([tagPath], [1])
+			system.util.audit(
+				action = 'Hand Mode Request - Supervisor',
+				actionTarget = tagPath,
+				auditProfile = 'WAH_CND_AUDIT',
+				actionValue = 'Reason: ' +  comment,
+				actor = userString,
+				originatingContext = 4,
+				actorHost = host
+				)				
+		else:
+			userString = user1 + ' & ' + user2
+			system.util.audit(
+				action = 'Hand Mode Request Failed',
+				actionTarget = tagPath,
+				auditProfile = 'WAH_CND_AUDIT',
+				actionValue = 'Reason: User 2 does not have proper permissions',
+				actor = userString,
+				originatingContext = 4,
+				actorHost = host
+				)
 
 
 
