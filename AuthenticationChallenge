@@ -1,3 +1,8 @@
+
+
+
+
+##Authentication Challenge gateway script
 def onAuthChallengeCompleted(session, payload, result):
 	tagPath = payload['tagPath']
 	comment = payload['comment']
@@ -34,3 +39,24 @@ def onAuthChallengeCompleted(session, payload, result):
 			originatingContext = 4,
 			actorHost = host
 			)
+
+
+
+## Button that called this function
+def runAction(self, event):
+	tagPath = self.view.params.tagPath
+	comment = self.parent.parent.getChild("TextArea").props.text
+	user1 = self.session.props.auth.user.userName
+	host = str(self.session.props.host)
+	system.perspective.authenticationChallenge(
+		idp = 'WAH_CND_IDP',
+		forceAuth = True,
+		timeout = 1,
+		framing = 'embedded',
+		payload = {
+			'tagPath':tagPath,
+			'comment':comment,
+			'user1': user1,
+			'host': host
+			}
+		)
