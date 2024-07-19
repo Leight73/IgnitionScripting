@@ -1,0 +1,36 @@
+def onAuthChallengeCompleted(session, payload, result):
+	tagPath = payload['tagPath']
+	comment = payload['comment']
+	user1 = payload['user1']
+	host = payload['host']
+
+	if result.isSuccess():
+		success = True
+		context = result.getAsSuccess().getContext()
+		user = context.user
+		user2 = context.user.userName
+		roles = user.roles
+		
+	if 'Administrator' or 'Maintenance' or 'Supervisor' in roles:
+		userString = user1 + ' & ' + user2
+		system.tag.writeBlocking([tagPath], [1])
+		system.util.audit(
+			action = 'Hand Mode Request',
+			actionTarget = tagPath,
+			auditProfile = 'WAH_CND_AUDIT',
+			actionValue = 'Reason: ' +  comment,
+			actor = userString,
+			originatingContext = 4,
+			actorHost = host
+			)
+		
+	else:
+		system.util.audit(
+			action = 'Hand Mode Request Failed',
+			actionTarget = tagPath,
+			auditProfile = 'WAH_CND_AUDIT',
+			actionValue = 'Reason: ' +  comment,
+			actor = userString,
+			originatingContext = 4,
+			actorHost = host
+			)
